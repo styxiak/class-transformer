@@ -405,6 +405,97 @@ describe("basic functionality", () => {
         });
     });
 
+    it("should not assign 'undefined' value when property is Exposed, and source valu is defined", () => {
+
+      class User {
+
+        @Expose()
+        id: number;
+
+        @Expose()
+        firstName: string;
+
+        @Expose()
+        lastName: string;
+
+        @Exclude()
+        password: string;
+      }
+
+      const user = new User();
+      user.firstName = "Umed";
+      user.lastName = "Khudoiberdiev";
+      user.password = "imnosuperman";
+
+      const fromPlainUser = {
+        firstName: "Umed",
+        lastName: "Khudoiberdiev",
+        password: "imnosuperman"
+      };
+
+      const fromExistUser = new User();
+      fromExistUser.id = 1;
+
+      const plainUser: any = classToPlain(user, { strategy: "excludeAll" });
+      plainUser.should.not.be.instanceOf(User);
+      plainUser.should.be.eql({
+        id: undefined,
+        firstName: "Umed",
+        lastName: "Khudoiberdiev"
+      });
+      expect(plainUser.password).to.be.undefined;
+
+      const existUser = { id: 1, age: 27 };
+      const plainUser2 = classToPlainFromExist(user, existUser, { strategy: "excludeAll" });
+      console.log(plainUser2);
+      plainUser2.should.not.be.instanceOf(User);
+      plainUser2.should.be.eql({
+        id: 1,
+        firstName: "Umed",
+        lastName: "Khudoiberdiev",
+        age: 27
+      });
+      plainUser2.should.be.equal(existUser);
+
+
+      const transformedUser = plainToClass(User, fromPlainUser, { strategy: "excludeAll" });
+      transformedUser.should.be.instanceOf(User);
+      transformedUser.should.be.eql({
+        firstName: "Umed",
+        lastName: "Khudoiberdiev",
+        id: undefined
+      });
+
+
+      const fromExistTransformedUser = plainToClassFromExist(fromExistUser, fromPlainUser, { strategy: "excludeAll" });
+      fromExistTransformedUser.should.be.instanceOf(User);
+      fromExistTransformedUser.should.be.eql({
+        id: 1,
+        firstName: "Umed",
+        lastName: "Khudoiberdiev"
+      });
+
+      const classToClassUser = classToClass(user, { strategy: "excludeAll" });
+      classToClassUser.should.be.instanceOf(User);
+      classToClassUser.should.not.be.equal(user);
+      classToClassUser.should.be.eql({
+        firstName: "Umed",
+        lastName: "Khudoiberdiev",
+        id: undefined
+      });
+
+      const classToClassFromExistUser = classToClassFromExist(user, fromExistUser, { strategy: "excludeAll" });
+      classToClassFromExistUser.should.be.instanceOf(User);
+      classToClassFromExistUser.should.not.be.equal(user);
+      classToClassFromExistUser.should.be.equal(fromExistUser);
+      classToClassFromExistUser.should.be.eql({
+        id: 1,
+        firstName: "Umed",
+        lastName: "Khudoiberdiev",
+      });
+
+    });
+
     it("should expose all properties from object if its defined via transformation options, but exclude properties marked with @Exclude() decorator", () => {
         defaultMetadataStorage.clear();
 

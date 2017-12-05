@@ -166,19 +166,42 @@ export class TransformOperationExecutor {
                     let transformKey = this.transformationType === TransformationType.PLAIN_TO_CLASS ? newValueKey : key;
                     let finalValue = this.transform(subSource, subValue, type, arrayType, isSubValueMap, level + 1);
                     finalValue = this.applyCustomTransformations(finalValue, targetType, transformKey, value, this.transformationType);
-                    if (newValue instanceof Map) {
-                        newValue.set(newValueKey, finalValue);
+                    if (!source) {
+                        if (newValue instanceof Map) {
+                            newValue.set(newValueKey, finalValue);
+                        } else {
+                            newValue[newValueKey] = finalValue;
+                        }
                     } else {
-                        newValue[newValueKey] = finalValue;
+                        // ...FromExists - if newValue is undefined, then no use it
+                        if (finalValue) {
+                            if (newValue instanceof Map) {
+                                newValue.set(newValueKey, finalValue);
+                            } else {
+                                newValue[newValueKey] = finalValue;
+                            }
+                        }
                     }
                 } else if (this.transformationType === TransformationType.CLASS_TO_CLASS) {
+                  console.log(666);
                     let finalValue = subValue;
                     finalValue = this.applyCustomTransformations(finalValue, targetType, key, value, this.transformationType);
+                  if (!source) {
                     if (newValue instanceof Map) {
-                        newValue.set(newValueKey, finalValue);
+                      newValue.set(newValueKey, finalValue);
                     } else {
-                        newValue[newValueKey] = finalValue;
+                      newValue[newValueKey] = finalValue;
                     }
+                  } else {
+                    // ...FromExists - if newValue is undefined, then no use it
+                    if (finalValue) {
+                      if (newValue instanceof Map) {
+                        newValue.set(newValueKey, finalValue);
+                      } else {
+                        newValue[newValueKey] = finalValue;
+                      }
+                    }
+                  }
                 }
 
             }
