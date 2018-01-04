@@ -174,7 +174,7 @@ export class TransformOperationExecutor {
                         }
                     } else {
                         // ...FromExists - if newValue is undefined, then no use it
-                        if (finalValue) {
+                        if (finalValue !== undefined) {
                             if (newValue instanceof Map) {
                                 newValue.set(newValueKey, finalValue);
                             } else {
@@ -194,7 +194,7 @@ export class TransformOperationExecutor {
                     }
                   } else {
                     // ...FromExists - if newValue is undefined, then no use it
-                    if (finalValue) {
+                    if (finalValue !== undefined) {
                       if (newValue instanceof Map) {
                         newValue.set(newValueKey, finalValue);
                       } else {
